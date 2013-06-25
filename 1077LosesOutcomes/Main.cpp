@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <array>
+#include <cstdlib>
 
 using namespace std;
 
@@ -32,7 +33,7 @@ int main(int argc, char **argv)
 	
 	counter = 0;
 	array<const string, 6> feature_strings = {"CR", "LO", "PF", "SH", "ST", "WN"};
-	array<string, 4672> five_or_more;
+	array<string,1098> five_or_more;
 	five_or_more.fill("");
 	int feat_symbol_count = 0;
 	int cnt = 0;
@@ -52,7 +53,7 @@ int main(int argc, char **argv)
 		
 		if (feat_symbol_count >= 3)
 		{
-			five_or_more[counter] = *it;
+			five_or_more[cnt] = *it;
 			cnt++;
 		}
 		else
@@ -83,18 +84,65 @@ int main(int argc, char **argv)
 		
 		if (feat_symbol_count < 3)
 		{
-            auto num = random() % 2 + 1;
+            auto num = rand() % 2 + 1;
 			if (num == 2)
             {
-                *s = five_or_more[random() % five_or_more.size()-1];
-                cnt++;
-                output << *s << endl;
+                *s = five_or_more[rand() % five_or_more.size()-1];
+                if (*s != "")
+				{
+					cnt++;
+					output << *s << endl;
+				}
             }
 		}
         feat_symbol_count = 0;
     }
     output.close();
-	//for (auto it =
+	
+	// check for all same middle reels pos 2,7,12
+	array<const string,5> reel_syms = {"AC", "KN", "QN", "JA", "TN"};
+	int crayford = 0;
+	ofstream final("loses.h");
+	int write_counter = 0;
+	for (auto s = search_contents.begin(); s != search_contents.end(); s++)
+	{
+		if (*s != "")
+		{
+			for (auto i = 0; i < reel_syms.size(); i++)
+			{
+				string whole = *s;
+				string first = "";
+				first += whole[2];//whole[10];
+				first += whole[3];//whole[11];
 
+				string second = "";
+				second += whole[22];//whole[30];
+				second += whole[23];//whole[31];
+
+				string third = "";
+				third += whole[42]; //whole[50];
+				third += whole[43]; //whole[51];
+			
+				if (first == reel_syms[i] && second == first && third == first)
+				{
+					if (rand()%2+1 == 2) 
+					{
+						cout << "Same string : " << crayford << endl;
+						*s = five_or_more[crayford];
+						crayford++;
+						break;
+					}
+				}
+			}
+		}
+		if (*s != "")
+		{
+			final << *s << endl;
+			write_counter++;
+		}
+    }
+	final << "WriteCounter : " << write_counter << endl;
+	final.close();
+	
 	return 0;
 }
